@@ -1,0 +1,84 @@
+--- 
+title: "Tidy Tuesday Cetaceans"
+output:
+  html_document:
+    df_print: paged
+---
+
+# Packages
+
+```{r packages}
+library(tidyverse)
+library(ggplot2)
+```
+
+# Data
+
+```{r load_data}
+cetaceans <- read_csv("allCetaceanData.csv")
+head(cetaceans)
+```
+
+
+
+### Data Exploration & Analysis ### 
+
+```{r include = TRUE}
+
+eightiesfish <- cetaceans%>% 
+  filter(birthYear >= 1980 ) %>%
+  filter(birthYear <= 1989) %>%
+  filter(region == "US")
+
+
+# Number of cars in each class:
+
+## plto the birthyear
+ggplot(eightiesfish, aes(birthYear)) + geom_histogram(binwidth = 1) + ggtitle(label = "Distribution of births by Year", subtitle = "Cetaceans births in 1980s") + theme_bw()
+ 
+#plotSex
+ggplot(eightiesfish, aes(sex)) + geom_bar() + ggtitle(label = "Cetacean Gender") + theme_classic()
+
+```
+
+```{r}
+
+## Find unique species values 
+
+unique(cetaceans$species)
+
+## Find the number of unique species 
+length(unique(cetaceans$species))
+
+```
+
+# There are 37 unique species that are represented in the dataframe 
+
+# Examine all the unique ways in which species were Acquired 
+
+```{r}
+unique(cetaceans$acquisition)
+
+
+```
+```{r}
+ggplot(cetaceans, aes(acquisition)) + geom_bar() + ggtitle(label = "Acquistion Method") + theme_classic()
+
+```
+
+The majority of acquisitons occured through caputre, followed by being born in captivity. 
+
+## Plot the types of species and there relative count 
+
+```{r }
+
+ggplot(cetaceans, aes(species)) + geom_bar() + coord_flip() + ggtitle(label = "Distribution of Species") 
+  
+
+```
+
+
+
+
+
+```
