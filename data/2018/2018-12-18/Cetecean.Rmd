@@ -1,5 +1,6 @@
 --- 
 title: "Tidy Tuesday Cetaceans"
+subtitle: "Kate Straneva"
 output:
   html_document:
     df_print: paged
@@ -10,12 +11,19 @@ output:
 ```{r packages}
 library(tidyverse)
 library(ggplot2)
+library(dplyr)
+library(readr)
+library(tibble)
+library(lubridate)
+library(RColorBrewer)
+library(formatR)
 ```
 
 # Data
 
 ```{r load_data}
 cetaceans <- read_csv("allCetaceanData.csv")
+dim(cetaceans)
 head(cetaceans)
 ```
 
@@ -72,10 +80,71 @@ The majority of acquisitons occured through caputre, followed by being born in c
 
 ```{r }
 
+
+
 ggplot(cetaceans, aes(species)) + geom_bar() + coord_flip() + ggtitle(label = "Distribution of Species") 
-  
 
 ```
+
+The most common species represented in the data is the bottlenose dolphin. 
+
+
+# Gender Breakdown of Species acqured 
+
+```{r}
+
+
+ggplot(cetaceans, aes(sex)) + geom_bar() + coord_flip() + ggtitle(label = "Distribution of Genders") + theme_minimal() 
+
+
+```
+There were almost 300 more females than males represented in the dataset. 
+
+
+# More advanced Visualizations 
+
+
+
+
+## 1. Visualization comparing the average age of males versus females faceted by species. 
+
+To complete this visualization, I first need to calculate the age of each animal that is still alive. 
+I will filter the data to only include animals marked with the status "Alive." 
+I will then caculate the age by subtracting 2018 from the year they were born 
+(2018 because this dataset was created in 2018). I will only include the top 
+four species represented in the data. I will group by species and caculate the 
+average age for each species. I will use geom_boxplot to show the median age 
+of each species. 
+
+
+```{r}
+
+alive <- cetaceans%>%
+  filter(status == "Alive") %>% 
+  filter(sex == "F" | sex == "M") %>% 
+  filter(species %in% c("Beluga", "Bottlenose", "Killer Whale; Orca", "Pilot, Short-fin")) %>%
+  mutate(age = 2018 - birthYear)%>% 
+  select(species, age, sex, acquisition, region) %>% 
+  group_by(species) %>% 
+  mutate(Average_Age = mean(age)) 
+
+
+##mutate(Average_Age = format(Average_Age,'%Y'))
+
+head(alive)
+
+
+ggplot(alive, aes(x = sex, y = age, fill = sex)) + geom_boxplot(outlier.colour="red", outlier.shape=8,
+                outlier.size=4)   + ggtitle(label = "Average age by Gender for top Species")  + facet_grid(~species) +  scale_fill_brewer(palette="Set3") +  theme_minimal() 
+
+
+
+```
+ In this dataset the medianage for male killer whales and  male pilot whales is 
+ higher than females.The median age of male and femalebottlenose dolphins
+ are very similar. In this dataset, the beluga whale females had a older median 
+ age than males. I chose to highlight the outliers using a red asterisk.
+
 
 
 
